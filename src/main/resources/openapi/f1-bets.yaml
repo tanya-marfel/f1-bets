@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: F1 Betting Service API
+  description: List F1 events, place bets on a driver to win, and settle event outcomes.
+  version: v1
+servers:
+  - url: /
+tags:
+  - name: events
+  - name: bets
+  - name: outcomes
+paths:
+  /api/v1/events:
+    get:
+      tags: [ events ]
+      operationId: listEvents
+      summary: List F1 events, each with a per-driver odds market and issued quotes.
+      parameters:
+        - name: sessionType
+          in: query
+          required: false
+          schema: { type: string }
+        - name: year
+          in: query
+          required: false
+          schema: { type: integer, format: int32 }
+        - name: country
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching events with issued odds quotes.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EventResponse' }
+        '502':
+          $ref: '#/components/responses/Problem'
+  /api/v1/bets:
+    post:
+      tags: [ bets ]
+      operationId: placeBet
+      summary: Place a single bet by consuming a server-issued odds quote.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PlaceBetRequest' }
+      responses:
+        '201':
+          description: Bet placed; returns the new balance.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BetResponse' }
+        '400': { $ref: '#/components/responses/Problem' }
+        '404': { $ref: '#/components/responses/Problem' }
+        '409': { $ref: '#/components/responses/Problem' }
+        '410': { $ref: '#/components/responses/Problem' }
+  /api/v1/outcomes:
+    post:
+      tags: [ outcomes ]
+      operationId: settleOutcome
+      summary: Settle a finished event, mark bets won/lost and pay out winners.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OutcomeRequest' }
+      responses:
+        '200':
+          description: Settlement summary.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SettlementResponse' }
+        '400': { $ref: '#/components/responses/Problem' }
+        '409': { $ref: '#/components/responses/Problem' }
+components:
+  responses:
+    Problem:
+      description: RFC 7807 problem detail.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ProblemDetail' }
+  schemas:
+    EventResponse:
+      type: object
+      properties:
+        eventId: { type: integer, format: int64 }
+        sessionType: { type: string }
+        year: { type: integer, format: int32, nullable: true }
+        country: { type: string }
+        sessionName: { type: string }
+        drivers:
+          type: array
+          items: { $ref: '#/components/schemas/DriverMarketResponse' }
+    DriverMarketResponse:
+      type: object
+      properties:
+        driverNumber: { type: integer, format: int32 }
+        fullName: { type: string }
+        odds: { type: integer, format: int32 }
+        quoteId: { type: string, format: uuid }
+        quoteExpiresAt: { type: string, format: date-time }
+    PlaceBetRequest:
+      type: object
+      required: [ userId, quoteId, amountEur ]
+      properties:
+        userId: { type: integer, format: int64 }
+        quoteId: { type: string, format: uuid }
+        amountEur: { type: number, minimum: 0.01 }
+    BetResponse:
+      type: object
+      properties:
+        betId: { type: integer, format: int64 }
+        status: { type: string }
+        newBalanceEur: { type: number }
+    OutcomeRequest:
+      type: object
+      required: [ eventId, winningDriverId ]
+      properties:
+        eventId: { type: integer, format: int64 }
+        winningDriverId: { type: integer, format: int32 }
+    SettlementResponse:
+      type: object
+      properties:
+        eventId: { type: integer, format: int64 }
+        winningDriverId: { type: integer, format: int32 }
+        settledBets: { type: integer, format: int32 }
+        wonBets: { type: integer, format: int32 }
+        lostBets: { type: integer, format: int32 }
+        totalPaidOutEur: { type: number }
+    ProblemDetail:
+      type: object
+      description: RFC 7807 problem detail with extension members.
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer, format: int32 }
+        detail: { type: string }
+        instance: { type: string }
+        quoteId: { type: string, format: uuid }
+        eventId: { type: integer, format: int64 }
+        userId: { type: integer, format: int64 }
+

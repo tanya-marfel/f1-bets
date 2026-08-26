@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: f1bets
+      POSTGRES_USER: f1bets
+      POSTGRES_PASSWORD: f1bets
+    ports:
+      - "5432:5432"
+    volumes:
+      - f1bets-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U f1bets -d f1bets" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Full-stack app service, behind the "app" profile so `./gradlew bootRun`
+  # (which uses Spring Boot's Docker Compose support) still starts only Postgres.
+  app:
+    profiles: [ "app" ]
+    build:
+      context: .
+    image: f1-bets:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/f1bets
+      SPRING_DATASOURCE_USERNAME: f1bets
+      SPRING_DATASOURCE_PASSWORD: f1bets
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "bash -c '</dev/tcp/localhost/8080' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  f1bets-postgres:
+

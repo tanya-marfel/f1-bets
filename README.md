@@ -28,8 +28,10 @@ as **single-use, expiring quotes**, so the server always stays authoritative ove
 
 ### Prerequisites
 
-- **JDK 25**
+- **JDK 25** — for local development and the test suite
 - **Docker** running (Docker Desktop, Colima, Rancher Desktop, …)
+
+Running the full stack with `make up` needs **only Docker** — the jar is built inside the image.
 
 ### Run locally
 
@@ -43,16 +45,22 @@ Spring Boot's Docker Compose support starts the PostgreSQL container defined in 
 ### Run the full stack in Docker
 
 ```bash
-make up                # builds the jar, then starts Postgres + the app in Docker
+make up                # builds the image from source, then starts Postgres + the app in Docker
 ```
 
-Without `make`: `./gradlew bootJar && docker compose --profile app up --build`.
+Without `make`: `docker compose --profile app up --build`. No prior Gradle build is needed — this path requires only
+Docker.
 
 The `app` service sits behind a Compose **profile**, so `./gradlew bootRun` still starts only Postgres. The container
-waits for Postgres to become healthy, runs Flyway, and exposes the API on `http://localhost:8080`. The jar is built on
-the host (or in CI) and copied into an `amazoncorretto:25` JDK image.
+waits for Postgres to become healthy, runs Flyway, and exposes the API on `http://localhost:8080`.
 
-Run `make help` for all targets: `build`, `test`, `run`, `up`, `up-detached`, `down`, `logs`, `clean`.
+[`Dockerfile`](Dockerfile) is a **multi-stage** build: the jar is compiled inside a `gradle:…-jdk25-corretto-al2023`
+stage, then its Spring Boot layers are extracted into an `amazoncorretto:25-al2023-headless` runtime image running as a
+non-root user (uid `10001`). Dependencies and application code land in separate layers, so a code change rebuilds only
+the small final layer.
+
+Run `make help` for all targets: `build`, `test`, `run`, `check-versions`, `up`, `up-detached`, `down`, `logs`,
+`clean`.
 
 ### First request
 
@@ -335,13 +343,14 @@ that needs updating. `springdoc` serves Swagger UI and `/v3/api-docs` at runtime
 ## Development
 
 **Stack:** Java 25 · Spring Boot 4.1 · PostgreSQL 16 · Flyway · Gradle (Kotlin DSL) · Lombok · springdoc ·
-Testcontainers · WireMock · JaCoCo.
+Testcontainers · WireMock · JaCoCo · Spotless.
 
 ```bash
 ./gradlew build          # compile + generate API sources + jar
 ./gradlew bootJar        # executable jar   (alias: make build)
-./gradlew check          # all tests + coverage gate (alias: make test)
+./gradlew check          # format check + all tests + coverage gate (alias: make test)
 ./gradlew bootRun        # run locally      (alias: make run)
+./gradlew spotlessApply  # reformat the code in place
 ./gradlew clean          # clean build output
 ```
 
@@ -349,6 +358,22 @@ Generated OpenAPI sources land in `build/generated/openapi` and are added to the
 edit them by hand.
 
 A database change means adding a new `V<n>__description.sql` migration; applied migrations are immutable.
+
+### Dependency versions
+
+Every external version — plugins, libraries, the JDK — is declared in
+[`gradle/libs.versions.toml`](gradle/libs.versions.toml); the build scripts hold no hardcoded versions. Where the Spring
+Boot BOM already manages a coordinate (the starters, Flyway, Testcontainers), the catalog entry deliberately omits the
+version so the BOM stays authoritative and modules cannot drift apart.
+
+The `Dockerfile` pins its JDK and Gradle through build `ARG`s; `make check-versions` cross-checks them against the
+catalog and the Gradle wrapper and fails if they ever drift.
+
+### Code style
+
+Formatting is enforced by [Spotless](https://github.com/diffplug/spotless) using palantir-java-format. `spotlessCheck`
+is wired into `check`, so CI fails on unformatted code — run `./gradlew spotlessApply` to fix. Generated sources are
+excluded.
 
 ---
 
@@ -394,9 +419,10 @@ invariant proving no bet lingers `PENDING` on a settled event).
 ## Continuous integration
 
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs `./gradlew check jacocoTestReport` on Temurin 25 for every
-push to `main` and every pull request, then uploads the test and coverage reports as build artifacts. Testcontainers
-uses the runner's Docker daemon, so the Medium tests need no extra setup, and in-progress runs for the same ref are
-cancelled automatically.
+push to `main` and every pull request, then uploads the test and coverage reports as build artifacts. Because
+`spotlessCheck` and the coverage gate are both wired into `check`, a single command enforces formatting, tests and
+coverage. Testcontainers uses the runner's Docker daemon, so the Medium tests need no extra setup, and in-progress runs
+for the same ref are cancelled automatically.
 
 ---
 

@@ -19,10 +19,8 @@ public class BettingController implements BetsApi {
 
     @Override
     public ResponseEntity<BetResponse> placeBet(PlaceBetRequest request) {
-        PlacedBet placed = placeBetService.placeBet(
-                request.getUserId(),
-                request.getQuoteId(),
-                Money.of(request.getAmountEur()));
+        PlacedBet placed =
+                placeBetService.placeBet(request.getUserId(), request.getQuoteId(), Money.of(request.getAmountEur()));
         BetResponse response = new BetResponse()
                 .betId(placed.betId())
                 .status(placed.status().name())

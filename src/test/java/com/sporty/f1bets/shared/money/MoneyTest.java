@@ -2,9 +2,8 @@ package com.sporty.f1bets.shared.money;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.math.BigDecimal;
-
 import com.sporty.f1bets.testing.Small;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -25,11 +24,7 @@ class MoneyTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "25.00, 2, 50.00",
-            "25.00, 3, 75.00",
-            "25.00, 4, 100.00"
-    })
+    @CsvSource({"25.00, 2, 50.00", "25.00, 3, 75.00", "25.00, 4, 100.00"})
     void multipliesByOdds(String stake, int odds, String expected) {
         assertThat(Money.of(stake).multiply(odds)).isEqualTo(Money.of(expected));
     }
@@ -49,15 +44,8 @@ class MoneyTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "2.005, 2.00",
-            "2.015, 2.02",
-            "2.025, 2.02",
-            "2.035, 2.04"
-    })
+    @CsvSource({"2.005, 2.00", "2.015, 2.02", "2.025, 2.02", "2.035, 2.04"})
     void roundsHalfEven(String input, String expected) {
         assertThat(Money.of(input).toBigDecimal()).isEqualByComparingTo(expected);
     }
 }
-
-

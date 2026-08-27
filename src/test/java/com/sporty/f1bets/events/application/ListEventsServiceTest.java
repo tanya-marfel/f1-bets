@@ -7,12 +7,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.List;
-
 import com.sporty.f1bets.config.QuoteProperties;
 import com.sporty.f1bets.events.domain.Driver;
 import com.sporty.f1bets.events.domain.DriverMarketEntry;
@@ -21,6 +15,11 @@ import com.sporty.f1bets.shared.odds.OddsGenerator;
 import com.sporty.f1bets.shared.quote.OddsQuote;
 import com.sporty.f1bets.shared.quote.OddsQuoteRepository;
 import com.sporty.f1bets.testing.Small;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 @Small
@@ -33,8 +32,8 @@ class ListEventsServiceTest {
     private final OddsGenerator oddsGenerator = mock(OddsGenerator.class);
     private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
 
-    private final ListEventsService service = new ListEventsService(
-            provider, quotes, oddsGenerator, clock, new QuoteProperties(Duration.ofMinutes(5)));
+    private final ListEventsService service =
+            new ListEventsService(provider, quotes, oddsGenerator, clock, new QuoteProperties(Duration.ofMinutes(5)));
 
     @Test
     void issuesAQuotePerDriverWithConfiguredExpiry() {
@@ -54,9 +53,9 @@ class ListEventsServiceTest {
             assertThat(eventMarket.market())
                     .usingRecursiveFieldByFieldElementComparatorIgnoringFields("quoteId")
                     .containsExactly(
-                            new DriverMarketEntry(max, 3, null, expiry),
-                            new DriverMarketEntry(lewis, 4, null, expiry));
-            assertThat(eventMarket.market()).allSatisfy(entry -> assertThat(entry.quoteId()).isNotNull());
+                            new DriverMarketEntry(max, 3, null, expiry), new DriverMarketEntry(lewis, 4, null, expiry));
+            assertThat(eventMarket.market())
+                    .allSatisfy(entry -> assertThat(entry.quoteId()).isNotNull());
         });
         verify(quotes, times(2)).save(any(OddsQuote.class));
     }
@@ -68,7 +67,3 @@ class ListEventsServiceTest {
         assertThat(service.list(new EventFilter(null, null, null))).isEmpty();
     }
 }
-
-
-
-

@@ -1,15 +1,14 @@
 package com.sporty.f1bets.events.adapter.out.openf1;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sporty.f1bets.events.application.EventFilter;
 import com.sporty.f1bets.events.application.EventProviderPort;
 import com.sporty.f1bets.events.domain.Driver;
 import com.sporty.f1bets.events.domain.Event;
 import com.sporty.f1bets.shared.error.ProviderUnavailableException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
@@ -29,7 +28,8 @@ public class OpenF1EventProvider implements EventProviderPort {
     @Override
     public List<Event> listEvents(EventFilter filter) {
         try {
-            OpenF1SessionDto[] sessions = restClient.get()
+            OpenF1SessionDto[] sessions = restClient
+                    .get()
                     .uri(builder -> {
                         builder.path("/sessions");
                         if (filter.sessionType() != null) {
@@ -69,8 +69,11 @@ public class OpenF1EventProvider implements EventProviderPort {
     }
 
     private List<Driver> fetchDrivers(long sessionKey) {
-        OpenF1DriverDto[] drivers = restClient.get()
-                .uri(builder -> builder.path("/drivers").queryParam("session_key", sessionKey).build())
+        OpenF1DriverDto[] drivers = restClient
+                .get()
+                .uri(builder -> builder.path("/drivers")
+                        .queryParam("session_key", sessionKey)
+                        .build())
                 .retrieve()
                 .body(OpenF1DriverDto[].class);
 

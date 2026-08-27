@@ -7,8 +7,13 @@ pluginManagement {
     }
     resolutionStrategy {
         eachPlugin {
-            if (requested.id.id == "org.openapi.generator") {
-                useModule("org.openapitools:openapi-generator-gradle-plugin:${requested.version}")
+
+            when (requested.id.id) {
+                "org.openapi.generator" ->
+                    useModule("org.openapitools:openapi-generator-gradle-plugin:${requested.version}")
+
+                "com.diffplug.spotless" ->
+                    useModule("com.diffplug.spotless:spotless-plugin-gradle:${requested.version}")
             }
         }
     }

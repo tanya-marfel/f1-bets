@@ -1,18 +1,18 @@
 package com.sporty.f1bets.support;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
 import com.sporty.f1bets.betting.application.UserRepository;
 import com.sporty.f1bets.betting.domain.User;
 import com.sporty.f1bets.shared.money.Money;
 import com.sporty.f1bets.testing.Medium;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
@@ -29,6 +29,14 @@ import org.springframework.web.client.RestClient;
 @Import({TestcontainersConfiguration.class, FakeEventProviderConfig.class})
 public abstract class AbstractIntegrationTest {
 
+    /** A decoded JSON object, e.g. a response body or an RFC 7807 problem detail. */
+    protected static final ParameterizedTypeReference<Map<String, Object>> JSON_OBJECT =
+            new ParameterizedTypeReference<>() {};
+
+    /** A decoded JSON array of objects, e.g. the events listing. */
+    private static final ParameterizedTypeReference<List<Map<String, Object>>> JSON_OBJECT_LIST =
+            new ParameterizedTypeReference<>() {};
+
     @Value("${local.server.port}")
     private int port;
 
@@ -41,7 +49,7 @@ public abstract class AbstractIntegrationTest {
     void initRestClient() {
         client = RestClient.builder()
                 .baseUrl("http://localhost:" + port)
-                .defaultStatusHandler(status -> true, (request, response) -> {
+                .defaultStatusHandler(_ -> true, (_, _) -> {
                     // no-op: never throw, let tests assert on the status
                 })
                 .build();
@@ -51,17 +59,14 @@ public abstract class AbstractIntegrationTest {
         return users.save(new User(Money.of(balance))).getId();
     }
 
-    protected List<?> listEvents() {
-        return client.get().uri("/api/v1/events?year=2023").retrieve().body(List.class);
+    protected List<Map<String, Object>> listEvents() {
+        return client.get().uri("/api/v1/events?year=2023").retrieve().body(JSON_OBJECT_LIST);
     }
 
-    @SuppressWarnings("unchecked")
     protected String quoteFor(long eventId, int driverId) {
-        for (Object eventObj : listEvents()) {
-            Map<String, Object> event = (Map<String, Object>) eventObj;
+        for (Map<String, Object> event : listEvents()) {
             if (((Number) event.get("eventId")).longValue() == eventId) {
-                for (Object driverObj : (List<Object>) event.get("drivers")) {
-                    Map<String, Object> driver = (Map<String, Object>) driverObj;
+                for (Map<String, Object> driver : driversOf(event)) {
                     if (((Number) driver.get("driverNumber")).intValue() == driverId) {
                         return (String) driver.get("quoteId");
                     }
@@ -71,24 +76,30 @@ public abstract class AbstractIntegrationTest {
         throw new IllegalStateException("No quote for event " + eventId + " driver " + driverId);
     }
 
-    protected ResponseEntity<Map> placeBet(long userId, String quoteId, String amount) {
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> driversOf(Map<String, Object> event) {
+        return (List<Map<String, Object>>) event.get("drivers");
+    }
+
+    protected ResponseEntity<Map<String, Object>> placeBet(long userId, String quoteId, String amount) {
         return placeRawBet(Map.of("userId", userId, "quoteId", quoteId, "amountEur", new BigDecimal(amount)));
     }
 
-    protected ResponseEntity<Map> placeRawBet(Map<String, Object> body) {
-        return client.post().uri("/api/v1/bets")
+    protected ResponseEntity<Map<String, Object>> placeRawBet(Map<String, Object> body) {
+        return client.post()
+                .uri("/api/v1/bets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(JSON_OBJECT);
     }
 
-    protected ResponseEntity<Map> settle(long eventId, int winningDriverId) {
-        return client.post().uri("/api/v1/outcomes")
+    protected ResponseEntity<Map<String, Object>> settle(long eventId, int winningDriverId) {
+        return client.post()
+                .uri("/api/v1/outcomes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("eventId", eventId, "winningDriverId", winningDriverId))
                 .retrieve()
-                .toEntity(Map.class);
+                .toEntity(JSON_OBJECT);
     }
 }
-

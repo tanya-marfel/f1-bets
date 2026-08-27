@@ -12,5 +12,4 @@ public record OpenF1SessionDto(
         @JsonProperty("session_name") String sessionName,
         @JsonProperty("session_type") String sessionType,
         @JsonProperty("year") Integer year,
-        @JsonProperty("country_name") String countryName) {
-}
+        @JsonProperty("country_name") String countryName) {}

@@ -4,6 +4,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.openapi.generator") version "7.14.0"
     id("io.freefair.lombok") version "9.5.0"
+    id("com.diffplug.spotless") version "8.10.0"
     jacoco
 }
 
@@ -46,7 +47,22 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-// --- Contract-first: generate DTOs + API interfaces from the OpenAPI spec ---
+spotless {
+    java {
+        target("src/**/*.java")
+        targetExclude("**/build/**", "**/generated/**")
+        palantirJavaFormat("2.97.0")
+        removeUnusedImports()
+        formatAnnotations()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+// Never format generated OpenAPI sources
+tasks.named("spotlessJava") {
+    mustRunAfter(tasks.named("openApiGenerate"))
+}
 
 openApiGenerate {
     generatorName.set("spring")
@@ -75,21 +91,16 @@ tasks.named("compileJava") {
     dependsOn(tasks.named("openApiGenerate"))
 }
 
-// --- Test sizes (Google model) selected by JUnit tags over the single test source set ---
-
-// Default `test` runs Small tests only: fast, no Docker required.
 tasks.test {
     useJUnitPlatform { includeTags("small") }
 }
 
-// Explicit alias so both size tasks exist by name (mirrors `test`).
 tasks.register("smallTest") {
     group = "verification"
     description = "Runs Small (unit) tests."
     dependsOn(tasks.test)
 }
 
-// Medium tests: Spring + Testcontainers + WireMock (requires Docker).
 val mediumTest = tasks.register<Test>("mediumTest") {
     group = "verification"
     description = "Runs Medium (integration) tests."

@@ -1,14 +1,13 @@
 package com.sporty.f1bets.betting.application;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.util.List;
-
 import com.sporty.f1bets.betting.domain.Bet;
 import com.sporty.f1bets.betting.domain.BetStatus;
 import com.sporty.f1bets.betting.domain.EventOutcome;
 import com.sporty.f1bets.shared.error.EventAlreadySettledException;
 import com.sporty.f1bets.shared.money.Money;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

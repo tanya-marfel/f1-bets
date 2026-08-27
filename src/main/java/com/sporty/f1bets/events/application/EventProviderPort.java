@@ -1,8 +1,7 @@
 package com.sporty.f1bets.events.application;
 
-import java.util.List;
-
 import com.sporty.f1bets.events.domain.Event;
+import java.util.List;
 
 /**
  * Outbound port for fetching F1 events from an external provider. This is the

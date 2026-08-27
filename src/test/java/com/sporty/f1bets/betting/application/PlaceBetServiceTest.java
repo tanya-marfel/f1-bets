@@ -10,12 +10,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.util.Optional;
-import java.util.UUID;
-
 import com.sporty.f1bets.betting.domain.BetStatus;
 import com.sporty.f1bets.betting.domain.User;
 import com.sporty.f1bets.shared.error.EventAlreadySettledException;
@@ -28,6 +22,11 @@ import com.sporty.f1bets.shared.money.Money;
 import com.sporty.f1bets.shared.quote.OddsQuote;
 import com.sporty.f1bets.shared.quote.OddsQuoteRepository;
 import com.sporty.f1bets.testing.Small;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -47,8 +46,7 @@ class PlaceBetServiceTest {
     private final EventLockRepository locks = mock(EventLockRepository.class);
     private final Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
 
-    private final PlaceBetService service =
-            new PlaceBetService(quotes, outcomes, bets, wallet, locks, clock);
+    private final PlaceBetService service = new PlaceBetService(quotes, outcomes, bets, wallet, locks, clock);
 
     private OddsQuote validQuote() {
         return new OddsQuote(QUOTE_ID, EVENT_ID, DRIVER_ID, 3, NOW.minusSeconds(10), NOW.plusSeconds(300));
@@ -92,8 +90,7 @@ class PlaceBetServiceTest {
         when(quotes.findById(QUOTE_ID)).thenReturn(Optional.of(expired));
         Money amount = Money.of("10.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
-                .isInstanceOf(QuoteExpiredException.class);
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount)).isInstanceOf(QuoteExpiredException.class);
     }
 
     @Test
@@ -130,7 +127,3 @@ class PlaceBetServiceTest {
                 .isInstanceOf(QuoteAlreadyUsedException.class);
     }
 }
-
-
-
-

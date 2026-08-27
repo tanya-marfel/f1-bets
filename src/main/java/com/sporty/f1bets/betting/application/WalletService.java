@@ -16,7 +16,6 @@ public class WalletService {
 
     private final UserRepository users;
 
-
     public User debit(long userId, Money amount) {
         User user = users.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         user.debit(amount);
@@ -29,4 +28,3 @@ public class WalletService {
         return users.save(user);
     }
 }
-

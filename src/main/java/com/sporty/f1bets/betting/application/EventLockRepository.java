@@ -20,4 +20,3 @@ public interface EventLockRepository extends Repository<EventOutcome, Long> {
     @Query(value = "SELECT pg_advisory_xact_lock(:key)", nativeQuery = true)
     void lockEvent(@Param("key") long key);
 }
-

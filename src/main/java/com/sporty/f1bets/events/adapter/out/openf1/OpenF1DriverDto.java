@@ -9,6 +9,4 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OpenF1DriverDto(
         @JsonProperty("driver_number") Integer driverNumber,
-        @JsonProperty("full_name") String fullName) {
-}
-
+        @JsonProperty("full_name") String fullName) {}

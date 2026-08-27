@@ -1,9 +1,5 @@
 package com.sporty.f1bets.betting.application;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.util.UUID;
-
 import com.sporty.f1bets.betting.domain.Bet;
 import com.sporty.f1bets.betting.domain.User;
 import com.sporty.f1bets.shared.error.EventAlreadySettledException;
@@ -14,6 +10,9 @@ import com.sporty.f1bets.shared.error.QuoteNotFoundException;
 import com.sporty.f1bets.shared.money.Money;
 import com.sporty.f1bets.shared.quote.OddsQuote;
 import com.sporty.f1bets.shared.quote.OddsQuoteRepository;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -54,11 +53,11 @@ public class PlaceBetService {
 
         User user = wallet.debit(userId, amount);
 
-        Bet bet = new Bet(userId, quote.getEventId(), quote.getDriverId(), amount, quote.getOdds(), quoteId,
-                Instant.now(clock));
+        Bet bet = new Bet(
+                userId, quote.getEventId(), quote.getDriverId(), amount, quote.getOdds(), quoteId, Instant.now(clock));
         try {
             bets.saveAndFlush(bet);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException _) {
             // Unique violation on quote_id: the quote was already consumed.
             throw new QuoteAlreadyUsedException(quoteId);
         }

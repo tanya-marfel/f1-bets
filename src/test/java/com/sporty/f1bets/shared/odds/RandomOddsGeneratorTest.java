@@ -2,10 +2,9 @@ package com.sporty.f1bets.shared.odds;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.sporty.f1bets.testing.Small;
 import java.util.Random;
 import java.util.stream.IntStream;
-
-import com.sporty.f1bets.testing.Small;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,9 +31,11 @@ class RandomOddsGeneratorTest {
     @Test
     void producesEachAllowedValueAcrossManyRolls() {
         OddsGenerator generator = new RandomOddsGenerator(new Random(7));
-        assertThat(IntStream.range(0, 1000).map(i -> generator.nextOdds()).distinct().sorted().toArray())
+        assertThat(IntStream.range(0, 1000)
+                        .map(i -> generator.nextOdds())
+                        .distinct()
+                        .sorted()
+                        .toArray())
                 .containsExactly(2, 3, 4);
     }
 }
-
-

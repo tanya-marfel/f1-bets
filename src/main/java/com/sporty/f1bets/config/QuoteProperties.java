@@ -1,7 +1,6 @@
 package com.sporty.f1bets.config;
 
 import java.time.Duration;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -16,4 +15,3 @@ public record QuoteProperties(Duration ttl) {
         }
     }
 }
-

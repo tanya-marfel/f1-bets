@@ -2,11 +2,10 @@ package com.sporty.f1bets.betting.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Instant;
-import java.util.UUID;
-
 import com.sporty.f1bets.shared.money.Money;
 import com.sporty.f1bets.testing.Small;
+import java.time.Instant;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,11 +18,7 @@ class BetTest {
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "2, 50.00",
-            "3, 75.00",
-            "4, 100.00"
-    })
+    @CsvSource({"2, 50.00", "3, 75.00", "4, 100.00"})
     void payoutIsStakeTimesOdds(int odds, String expectedPayout) {
         assertThat(newBet(odds).calculatePayout()).isEqualTo(Money.of(expectedPayout));
     }
@@ -43,5 +38,3 @@ class BetTest {
         assertThat(other.getStatus()).isEqualTo(BetStatus.LOST);
     }
 }
-
-

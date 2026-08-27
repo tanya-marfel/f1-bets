@@ -1,7 +1,6 @@
 package com.sporty.f1bets.config;
 
 import java.time.Duration;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -23,4 +22,3 @@ public record OpenF1Properties(String baseUrl, Duration connectTimeout, Duration
         }
     }
 }
-

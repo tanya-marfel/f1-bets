@@ -1,5 +1,8 @@
 package com.sporty.f1bets.shared.error;
 
+import lombok.Getter;
+
+@Getter
 public class EventAlreadySettledException extends RuntimeException {
 
     private final long eventId;
@@ -8,9 +11,4 @@ public class EventAlreadySettledException extends RuntimeException {
         super("Event already settled: " + eventId);
         this.eventId = eventId;
     }
-
-    public long getEventId() {
-        return eventId;
-    }
 }
-

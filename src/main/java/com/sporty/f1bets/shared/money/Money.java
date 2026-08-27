@@ -80,4 +80,3 @@ public final class Money implements Comparable<Money> {
         return amount.toPlainString();
     }
 }
-

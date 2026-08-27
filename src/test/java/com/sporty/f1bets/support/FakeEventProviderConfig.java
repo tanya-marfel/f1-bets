@@ -29,5 +29,3 @@ public class FakeEventProviderConfig {
         return () -> FIXED_ODDS;
     }
 }
-
-

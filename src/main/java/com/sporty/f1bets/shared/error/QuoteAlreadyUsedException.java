@@ -1,7 +1,9 @@
 package com.sporty.f1bets.shared.error;
 
 import java.util.UUID;
+import lombok.Getter;
 
+@Getter
 public class QuoteAlreadyUsedException extends RuntimeException {
 
     private final UUID quoteId;
@@ -10,9 +12,4 @@ public class QuoteAlreadyUsedException extends RuntimeException {
         super("Quote already used: " + quoteId);
         this.quoteId = quoteId;
     }
-
-    public UUID getQuoteId() {
-        return quoteId;
-    }
 }
-

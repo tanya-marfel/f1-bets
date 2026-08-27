@@ -1,9 +1,8 @@
 package com.sporty.f1bets.shared.money;
 
-import java.math.BigDecimal;
-
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import java.math.BigDecimal;
 
 /**
  * Persists {@link Money} as a NUMERIC(19,2) column. Applied automatically to
@@ -22,4 +21,3 @@ public class MoneyConverter implements AttributeConverter<Money, BigDecimal> {
         return dbData == null ? null : Money.of(dbData);
     }
 }
-

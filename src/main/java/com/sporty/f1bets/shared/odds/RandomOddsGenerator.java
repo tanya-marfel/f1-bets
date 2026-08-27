@@ -27,4 +27,3 @@ public class RandomOddsGenerator implements OddsGenerator {
         return ALLOWED[generator.nextInt(ALLOWED.length)];
     }
 }
-

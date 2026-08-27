@@ -30,8 +30,7 @@ class UserTest {
         User user = new User(Money.of("100.00"));
         Money amount = Money.of("100.01");
 
-        assertThatThrownBy(() -> user.debit(amount))
-                .isInstanceOf(InsufficientFundsException.class);
+        assertThatThrownBy(() -> user.debit(amount)).isInstanceOf(InsufficientFundsException.class);
     }
 
     @Test
@@ -41,4 +40,3 @@ class UserTest {
         assertThat(user.getBalance()).isEqualTo(Money.of("150.00"));
     }
 }
-

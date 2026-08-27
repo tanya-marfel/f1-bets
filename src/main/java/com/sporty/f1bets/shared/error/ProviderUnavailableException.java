@@ -6,4 +6,3 @@ public class ProviderUnavailableException extends RuntimeException {
         super(message, cause);
     }
 }
-

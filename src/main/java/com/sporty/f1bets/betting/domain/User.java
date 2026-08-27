@@ -2,7 +2,6 @@ package com.sporty.f1bets.betting.domain;
 
 import com.sporty.f1bets.shared.error.InsufficientFundsException;
 import com.sporty.f1bets.shared.money.Money;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

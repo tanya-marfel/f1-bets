@@ -1,11 +1,10 @@
 package com.sporty.f1bets.support;
 
-import java.util.List;
-
 import com.sporty.f1bets.events.application.EventFilter;
 import com.sporty.f1bets.events.application.EventProviderPort;
 import com.sporty.f1bets.events.domain.Driver;
 import com.sporty.f1bets.events.domain.Event;
+import java.util.List;
 
 /**
  * Deterministic in-memory {@link EventProviderPort} used by end-to-end and
@@ -20,7 +19,8 @@ public class FakeEventProvider implements EventProviderPort {
     private final List<Event> events;
 
     public FakeEventProvider() {
-        List<Driver> drivers = List.of(new Driver(WINNING_DRIVER, "Max Verstappen"), new Driver(LOSING_DRIVER, "Lewis Hamilton"));
+        List<Driver> drivers =
+                List.of(new Driver(WINNING_DRIVER, "Max Verstappen"), new Driver(LOSING_DRIVER, "Lewis Hamilton"));
         this.events = List.of(
                 new Event(100L, "Race", 2023, "Italy", "Monza", drivers),
                 new Event(200L, "Race", 2023, "Belgium", "Spa", drivers),
@@ -34,4 +34,3 @@ public class FakeEventProvider implements EventProviderPort {
         return events;
     }
 }
-

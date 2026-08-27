@@ -6,4 +6,3 @@ public class InvalidBetAmountException extends RuntimeException {
         super(message);
     }
 }
-

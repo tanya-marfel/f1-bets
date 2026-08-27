@@ -1,11 +1,5 @@
 package com.sporty.f1bets.events.application;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.sporty.f1bets.config.QuoteProperties;
 import com.sporty.f1bets.events.domain.Driver;
 import com.sporty.f1bets.events.domain.DriverMarketEntry;
@@ -13,6 +7,11 @@ import com.sporty.f1bets.events.domain.Event;
 import com.sporty.f1bets.shared.odds.OddsGenerator;
 import com.sporty.f1bets.shared.quote.OddsQuote;
 import com.sporty.f1bets.shared.quote.OddsQuoteRepository;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

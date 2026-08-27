@@ -1,7 +1,6 @@
 package com.sporty.f1bets.shared.error;
 
 import java.net.URI;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -17,46 +16,52 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiExceptionHandler {
 
     private static final String BASE_TYPE = "https://f1-bets/errors/";
+    private static final String QUOTE_ID_PROPERTY = "quoteId";
+    private static final String USER_ID_PROPERTY = "userId";
+    private static final String EVENT_ID_PROPERTY = "eventId";
 
     @ExceptionHandler(QuoteNotFoundException.class)
     public ProblemDetail handle(QuoteNotFoundException ex) {
         ProblemDetail problem = problem(HttpStatus.NOT_FOUND, "Quote not found", "quote-not-found", ex.getMessage());
-        problem.setProperty("quoteId", ex.getQuoteId());
+        problem.setProperty(QUOTE_ID_PROPERTY, ex.getQuoteId());
         return problem;
     }
 
     @ExceptionHandler(QuoteExpiredException.class)
     public ProblemDetail handle(QuoteExpiredException ex) {
         ProblemDetail problem = problem(HttpStatus.GONE, "Quote expired", "quote-expired", ex.getMessage());
-        problem.setProperty("quoteId", ex.getQuoteId());
+        problem.setProperty(QUOTE_ID_PROPERTY, ex.getQuoteId());
         return problem;
     }
 
     @ExceptionHandler(QuoteAlreadyUsedException.class)
     public ProblemDetail handle(QuoteAlreadyUsedException ex) {
-        ProblemDetail problem = problem(HttpStatus.CONFLICT, "Quote already used", "quote-already-used", ex.getMessage());
-        problem.setProperty("quoteId", ex.getQuoteId());
+        ProblemDetail problem =
+                problem(HttpStatus.CONFLICT, "Quote already used", "quote-already-used", ex.getMessage());
+        problem.setProperty(QUOTE_ID_PROPERTY, ex.getQuoteId());
         return problem;
     }
 
     @ExceptionHandler(InsufficientFundsException.class)
     public ProblemDetail handle(InsufficientFundsException ex) {
-        ProblemDetail problem = problem(HttpStatus.CONFLICT, "Insufficient funds", "insufficient-funds", ex.getMessage());
-        problem.setProperty("userId", ex.getUserId());
+        ProblemDetail problem =
+                problem(HttpStatus.CONFLICT, "Insufficient funds", "insufficient-funds", ex.getMessage());
+        problem.setProperty(USER_ID_PROPERTY, ex.getUserId());
         return problem;
     }
 
     @ExceptionHandler(EventAlreadySettledException.class)
     public ProblemDetail handle(EventAlreadySettledException ex) {
-        ProblemDetail problem = problem(HttpStatus.CONFLICT, "Event already settled", "event-already-settled", ex.getMessage());
-        problem.setProperty("eventId", ex.getEventId());
+        ProblemDetail problem =
+                problem(HttpStatus.CONFLICT, "Event already settled", "event-already-settled", ex.getMessage());
+        problem.setProperty(EVENT_ID_PROPERTY, ex.getEventId());
         return problem;
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ProblemDetail handle(UserNotFoundException ex) {
         ProblemDetail problem = problem(HttpStatus.NOT_FOUND, "User not found", "user-not-found", ex.getMessage());
-        problem.setProperty("userId", ex.getUserId());
+        problem.setProperty(USER_ID_PROPERTY, ex.getUserId());
         return problem;
     }
 
@@ -72,7 +77,10 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ProblemDetail handle(OptimisticLockingFailureException ex) {
-        return problem(HttpStatus.CONFLICT, "Concurrent modification", "concurrent-modification",
+        return problem(
+                HttpStatus.CONFLICT,
+                "Concurrent modification",
+                "concurrent-modification",
                 "The resource was modified concurrently, please retry.");
     }
 
@@ -83,4 +91,3 @@ public class ApiExceptionHandler {
         return problem;
     }
 }
-

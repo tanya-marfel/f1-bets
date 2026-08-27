@@ -1,9 +1,8 @@
 package com.sporty.f1bets.betting.application;
 
-import java.util.List;
-
 import com.sporty.f1bets.betting.domain.Bet;
 import com.sporty.f1bets.betting.domain.BetStatus;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BetRepository extends JpaRepository<Bet, Long> {
@@ -12,4 +11,3 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
 
     long countByEventIdAndStatus(long eventId, BetStatus status);
 }
-

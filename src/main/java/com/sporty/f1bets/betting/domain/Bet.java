@@ -1,10 +1,6 @@
 package com.sporty.f1bets.betting.domain;
 
-import java.time.Instant;
-import java.util.UUID;
-
 import com.sporty.f1bets.shared.money.Money;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +9,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,8 +55,14 @@ public class Bet {
     @Column(name = "placed_at", nullable = false)
     private Instant placedAt;
 
-    public Bet(long userId, long eventId, int driverId, Money amount, int oddsAtPlacement, UUID quoteId,
-               Instant placedAt) {
+    public Bet(
+            long userId,
+            long eventId,
+            int driverId,
+            Money amount,
+            int oddsAtPlacement,
+            UUID quoteId,
+            Instant placedAt) {
         this.userId = userId;
         this.eventId = eventId;
         this.driverId = driverId;

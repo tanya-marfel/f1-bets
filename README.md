@@ -50,7 +50,7 @@ Without `make`: `./gradlew bootJar && docker compose --profile app up --build`.
 
 The `app` service sits behind a Compose **profile**, so `./gradlew bootRun` still starts only Postgres. The container
 waits for Postgres to become healthy, runs Flyway, and exposes the API on `http://localhost:8080`. The jar is built on
-the host (or in CI) and copied into a slim `eclipse-temurin:25-jre` image.
+the host (or in CI) and copied into an `amazoncorretto:25` JDK image.
 
 Run `make help` for all targets: `build`, `test`, `run`, `up`, `up-detached`, `down`, `logs`, `clean`.
 

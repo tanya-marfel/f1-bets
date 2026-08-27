@@ -1,8 +1,12 @@
-build/*
-!build/libs/
+build/
 .gradle/
 .idea/
 .git/
 *.iml
 
-
+# Not needed to compile or run the app.
+*.md
+Makefile
+compose.yaml
+Dockerfile
+.dockerignore

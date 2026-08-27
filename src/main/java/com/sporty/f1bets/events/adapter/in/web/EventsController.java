@@ -24,7 +24,7 @@ public class EventsController implements EventsApi {
     private final ListEventsService listEventsService;
 
     @Override
-    public ResponseEntity<List<EventResponse>> listEvents(String sessionType, Integer year, String country) {
+    public ResponseEntity<List<EventResponse>> listEvents(Integer year, String sessionType, String country) {
         List<EventResponse> events = listEventsService.list(new EventFilter(sessionType, year, country))
                 .stream()
                 .map(EventsController::toResponse)

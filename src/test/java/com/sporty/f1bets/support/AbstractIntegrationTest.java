@@ -35,7 +35,7 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     protected UserRepository users;
 
-    private RestClient client;
+    protected RestClient client;
 
     @BeforeEach
     void initRestClient() {

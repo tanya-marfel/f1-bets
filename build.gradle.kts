@@ -1,10 +1,10 @@
 plugins {
     java
-    id("org.springframework.boot") version "4.1.1"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.openapi.generator") version "7.14.0"
-    id("io.freefair.lombok") version "9.5.0"
-    id("com.diffplug.spotless") version "8.10.0"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.openapi.generator)
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.spotless)
     jacoco
 }
 
@@ -14,7 +14,7 @@ description = "f1-bets"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get())
     }
 }
 
@@ -22,36 +22,37 @@ repositories {
     mavenCentral()
 }
 
+// The freefair plugin wires Lombok into every source set; this is the only
+// place its version needs to be declared.
+lombok {
+    version = libs.versions.lombok
+}
+
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
-    implementation("org.springframework.boot:spring-boot-flyway")
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
-    runtimeOnly("org.postgresql:postgresql")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    implementation(libs.spring.boot.starter.web)
+    implementation(libs.spring.boot.starter.data.jpa)
+    implementation(libs.spring.boot.starter.validation)
+    implementation(libs.spring.boot.starter.actuator)
+    implementation(libs.springdoc.openapi.starter.webmvc.ui)
+    implementation(libs.spring.boot.flyway)
+    implementation(libs.flyway.core)
+    implementation(libs.flyway.database.postgresql)
+    runtimeOnly(libs.postgresql)
+    developmentOnly(libs.spring.boot.docker.compose)
 
-    compileOnly("org.projectlombok:lombok:1.18.46")
-    annotationProcessor("org.projectlombok:lombok:1.18.46")
-    testCompileOnly("org.projectlombok:lombok:1.18.46")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.46")
-
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:junit-jupiter:1.20.6")
-    testImplementation("org.testcontainers:postgresql:1.20.6")
-    testImplementation("org.wiremock:wiremock-standalone:3.9.2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.spring.boot.testcontainers)
+    testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation(libs.testcontainers.postgresql)
+    testImplementation(libs.wiremock.standalone)
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 spotless {
     java {
         target("src/**/*.java")
         targetExclude("**/build/**", "**/generated/**")
-        palantirJavaFormat("2.97.0")
+        palantirJavaFormat(libs.versions.palantir.java.format.get())
         removeUnusedImports()
         formatAnnotations()
         trimTrailingWhitespace()
@@ -116,7 +117,7 @@ tasks.check {
 }
 
 jacoco {
-    toolVersion = "0.8.13"
+    toolVersion = libs.versions.jacoco.get()
 }
 
 val coverageExclusions = listOf(

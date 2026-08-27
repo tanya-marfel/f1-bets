@@ -1,0 +1,53 @@
+# Single source of truth for every external version used by the build.
+# Renovate/Dependabot can update this file without touching build logic.
+
+[versions]
+java = "25"
+
+# Plugins
+spring-boot = "4.1.1"
+spring-dependency-management = "1.1.7"
+openapi-generator = "7.14.0"
+freefair-lombok = "9.5.0"
+spotless = "8.10.0"
+
+# Tools (not on the compile/runtime classpath)
+jacoco = "0.8.13"
+palantir-java-format = "2.97.0"
+lombok = "1.18.46"
+
+# Libraries whose version the Spring Boot BOM does not manage
+springdoc = "3.1.0"
+# Latest 3.x is 3.13.2 - pinned here deliberately, bump when ready
+wiremock = "3.9.2"
+
+[libraries]
+# --- Versions supplied by the Spring Boot BOM (io.spring.dependency-management) ---
+spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
+spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-flyway = { module = "org.springframework.boot:spring-boot-flyway" }
+spring-boot-docker-compose = { module = "org.springframework.boot:spring-boot-docker-compose" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
+spring-boot-testcontainers = { module = "org.springframework.boot:spring-boot-testcontainers" }
+flyway-core = { module = "org.flywaydb:flyway-core" }
+flyway-database-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
+postgresql = { module = "org.postgresql:postgresql" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+# Kept unversioned on purpose: the BOM aligns these with the Testcontainers core
+# that spring-boot-testcontainers pulls in, avoiding a 1.x/2.x split.
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql" }
+
+# --- Not covered by the BOM ---
+wiremock-standalone = { module = "org.wiremock:wiremock-standalone", version.ref = "wiremock" }
+springdoc-openapi-starter-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+openapi-generator = { id = "org.openapi.generator", version.ref = "openapi-generator" }
+lombok = { id = "io.freefair.lombok", version.ref = "freefair-lombok" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+

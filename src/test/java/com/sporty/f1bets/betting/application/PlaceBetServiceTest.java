@@ -70,7 +70,9 @@ class PlaceBetServiceTest {
 
     @Test
     void rejectsNonPositiveAmount() {
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.zero()))
+        Money amount = Money.zero();
+
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(InvalidBetAmountException.class);
         verify(quotes, never()).findById(any());
     }
@@ -78,8 +80,9 @@ class PlaceBetServiceTest {
     @Test
     void unknownQuoteThrows() {
         when(quotes.findById(QUOTE_ID)).thenReturn(Optional.empty());
+        Money amount = Money.of("10.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.of("10.00")))
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(QuoteNotFoundException.class);
     }
 
@@ -87,8 +90,9 @@ class PlaceBetServiceTest {
     void expiredQuoteThrows() {
         OddsQuote expired = new OddsQuote(QUOTE_ID, EVENT_ID, DRIVER_ID, 3, NOW.minusSeconds(600), NOW.minusSeconds(1));
         when(quotes.findById(QUOTE_ID)).thenReturn(Optional.of(expired));
+        Money amount = Money.of("10.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.of("10.00")))
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(QuoteExpiredException.class);
     }
 
@@ -96,8 +100,9 @@ class PlaceBetServiceTest {
     void settledEventThrows() {
         when(quotes.findById(QUOTE_ID)).thenReturn(Optional.of(validQuote()));
         when(outcomes.existsById(EVENT_ID)).thenReturn(true);
+        Money amount = Money.of("10.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.of("10.00")))
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(EventAlreadySettledException.class);
         verify(wallet, never()).debit(anyLong(), any());
     }
@@ -107,8 +112,9 @@ class PlaceBetServiceTest {
         when(quotes.findById(QUOTE_ID)).thenReturn(Optional.of(validQuote()));
         when(outcomes.existsById(EVENT_ID)).thenReturn(false);
         when(wallet.debit(eq(USER_ID), any(Money.class))).thenThrow(new InsufficientFundsException(USER_ID));
+        Money amount = Money.of("1000.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.of("1000.00")))
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(InsufficientFundsException.class);
     }
 
@@ -118,8 +124,9 @@ class PlaceBetServiceTest {
         when(outcomes.existsById(EVENT_ID)).thenReturn(false);
         when(wallet.debit(eq(USER_ID), any(Money.class))).thenReturn(new User(Money.of("75.00")));
         when(bets.saveAndFlush(any())).thenThrow(new DataIntegrityViolationException("dup quote_id"));
+        Money amount = Money.of("25.00");
 
-        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, Money.of("25.00")))
+        assertThatThrownBy(() -> service.placeBet(USER_ID, QUOTE_ID, amount))
                 .isInstanceOf(QuoteAlreadyUsedException.class);
     }
 }

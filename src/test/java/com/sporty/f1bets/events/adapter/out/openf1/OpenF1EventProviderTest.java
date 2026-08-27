@@ -22,7 +22,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 @Medium
-class OpenF1EventProviderWireMockTest {
+class OpenF1EventProviderTest {
 
     private WireMockServer wireMock;
     private OpenF1EventProvider provider;
@@ -69,8 +69,9 @@ class OpenF1EventProviderWireMockTest {
     void upstreamServerErrorBecomesProviderUnavailable() {
         wireMock.stubFor(get(urlPathEqualTo("/sessions"))
                 .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse().withStatus(503)));
+        EventFilter filter = new EventFilter(null, null, null);
 
-        assertThatThrownBy(() -> provider.listEvents(new EventFilter(null, null, null)))
+        assertThatThrownBy(() -> provider.listEvents(filter))
                 .isInstanceOf(ProviderUnavailableException.class);
     }
 }

@@ -44,16 +44,18 @@ class WalletServiceTest {
     @Test
     void debitBeyondBalanceThrows() {
         when(users.findById(1L)).thenReturn(Optional.of(new User(Money.of("10.00"))));
+        Money amount = Money.of("10.01");
 
-        assertThatThrownBy(() -> walletService.debit(1L, Money.of("10.01")))
+        assertThatThrownBy(() -> walletService.debit(1L, amount))
                 .isInstanceOf(InsufficientFundsException.class);
     }
 
     @Test
     void unknownUserThrows() {
         when(users.findById(99L)).thenReturn(Optional.empty());
+        Money amount = Money.of("1.00");
 
-        assertThatThrownBy(() -> walletService.credit(99L, Money.of("1.00")))
+        assertThatThrownBy(() -> walletService.credit(99L, amount))
                 .isInstanceOf(UserNotFoundException.class);
     }
 }

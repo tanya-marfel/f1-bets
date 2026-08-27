@@ -28,7 +28,9 @@ class UserTest {
     @Test
     void debitBeyondBalanceThrows() {
         User user = new User(Money.of("100.00"));
-        assertThatThrownBy(() -> user.debit(Money.of("100.01")))
+        Money amount = Money.of("100.01");
+
+        assertThatThrownBy(() -> user.debit(amount))
                 .isInstanceOf(InsufficientFundsException.class);
     }
 
